@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LipSync Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>LipSync Video with Audio</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="video">Upload Video:</label>
+        <input type="file" id="video" name="video" accept="video/*" required><br><br>
+        
+        <label for="audio">Upload Audio:</label>
+        <input type="file" id="audio" name="audio" accept="audio/*" required><br><br>
+        
+        <button type="submit">Process</button>
+    </form>
+    
+    <h2>Result</h2>
+    <video id="output-video" controls style="display:none; max-width: 100%;">
+        <source src="" type="video/mp4">
+    </video>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('video', document.getElementById('video').files[0]);
+            formData.append('audio', document.getElementById('audio').files[0]);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const blob = await response.blob();
+            const videoUrl = URL.createObjectURL(blob);
+            const videoElement = document.getElementById('output-video');
+            videoElement.src = videoUrl;
+            videoElement.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
